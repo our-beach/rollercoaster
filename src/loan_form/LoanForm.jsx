@@ -1,25 +1,43 @@
 import React from 'react'
+import autobind from 'autobind-decorator'
 import LoanEntries from './LoanEntries'
 import AddLoan from './buttons/AddLoanButton'
 import Calculate from './buttons/CalculateButton'
+import emptyLoan from '../models/loan/emptyLoan'
 
-const loans = [
-  { id: 0, title: 'Thing 1', amountOwed: 100, interestRate: 0.5, monthlyPayment: 10 },
-  { id: 1, title: 'Thing 2', amountOwed: 200, interestRate: 0.5, monthlyPayment: 10 },
-  { id: 2, title: 'Thing 3', amountOwed: 300, interestRate: 0.5, monthlyPayment: 10 },
-]
-
-const addLoan = e => console.log('add loan')
 const calculate = e => console.log('calculate')
 
-export default function LoanForm() {
-  return (
-    <div>
-      <LoanEntries loans={loans}/>
+export default class LoanForm extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      loans: [emptyLoan(0)]
+    }
+  }
+
+  createLoan() {
+    const lastId = this.state.loans[this.state.loans.length - 1].id
+    return emptyLoan(lastId + 1)
+  }
+
+  @autobind
+  handleAddLoan() {
+    const newLoans = this.state.loans.concat(
+      this.createLoan()
+    )
+
+    this.setState({ loans: newLoans })
+  }
+  
+  render() {
+    return (
       <div>
-        <AddLoan onClick={addLoan}/>
-        <Calculate onClick={calculate}/>
+        <LoanEntries loans={this.state.loans} />
+        <div>
+          <AddLoan onClick={this.handleAddLoan} />
+          <Calculate onClick={calculate}/>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
