@@ -1,5 +1,6 @@
 import React from 'react'
 import LoanEntryField from './LoanEntryField'
+import RemoveLoan from '../buttons/RemoveLoanButton'
 
 export default function LoanEntry ({id, title, amountOwed, interestRate, monthlyPayment}) {
   const titleFieldId = `${id}-${titleFieldName}`
@@ -14,6 +15,8 @@ export default function LoanEntry ({id, title, amountOwed, interestRate, monthly
   const monthlyPaymentFieldId = `${id}-${monthlyPaymentFieldName}`
   const monthlyPaymentFieldName = 'monthly-payment'
   const monthlyPaymentFieldValue = monthlyPayment
+
+  const removeLoan = e => console.log('remove loan')
   
   return (
     <div id={id}>
@@ -37,6 +40,9 @@ export default function LoanEntry ({id, title, amountOwed, interestRate, monthly
         name={monthlyPaymentFieldName}
         value={monthlyPaymentFieldValue}
         label={'Monthly Payment:'} />
+      <div>
+        <RemoveLoan onClick={removeLoan}/>
+      </div>
     </div>
   )
 }
