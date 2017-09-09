@@ -1,7 +1,12 @@
+const webpack = require('webpack')
 const path = require('path')
 
 module.exports = {
-  entry: path.join(__dirname, '..', 'src', 'index.js'),
+  devtool: 'inline-source-map',
+  entry: [    
+    path.join(__dirname, '..', 'src', 'index.js'),
+  ],
+
   output: {
     path: path.join(__dirname, '..', 'public'),
     filename: 'bundle.js'
@@ -22,5 +27,14 @@ module.exports = {
   resolve: {
     enforceExtension: false,
     extensions: ['.jsx', '.js', '.json']
+  },
+
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+  ],
+
+  devServer: {
+    hot: true,
+    contentBase: './',
   }
 }
