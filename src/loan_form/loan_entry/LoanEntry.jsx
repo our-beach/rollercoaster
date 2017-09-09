@@ -1,7 +1,10 @@
 import React from 'react'
 import LoanEntryField from './LoanEntryField'
 
-export default function LoanEntry ({id, amountOwed, interestRate, monthlyPayment}) {
+export default function LoanEntry ({id, title, amountOwed, interestRate, monthlyPayment}) {
+  const titleFieldId = `${id}-${titleFieldName}`
+  const titleFieldName = 'title'
+  const titleFieldValue = title
   const amountOwedFieldId = `${id}-${amountOwedFieldName}`
   const amountOwedFieldName = 'amount-owed'
   const amountOwedFieldValue = amountOwed
@@ -14,6 +17,11 @@ export default function LoanEntry ({id, amountOwed, interestRate, monthlyPayment
   
   return (
     <div id={id}>
+      <LoanEntryField
+        field_id={titleFieldId}
+        name={titleFieldName}
+        value={titleFieldValue}
+        label={'Title:'} />
       <LoanEntryField
         field_id={amountOwedFieldId}
         name={amountOwedFieldName}
