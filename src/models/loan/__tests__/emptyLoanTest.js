@@ -1,24 +1,18 @@
 import emptyLoan from '../emptyLoan'
+import defaultDebt from '../../debt/defaultDebt'
+import defaultPaymentPlan from '../../payment_plan/defaultPaymentPlan'
 
 jest.unmock('../emptyLoan')
 
 describe('emptyLoan', () => {
-  const loan = emptyLoan()
+  let loan
+  beforeEach(() => loan = emptyLoan())
 
-  it('has an interest rate of 0', () =>
-     expect(loan.interestRate).toEqual(0))
+  it('has the default debt', () =>
+    expect(defaultDebt).toHaveBeenCalled())
 
-  it('has a title that is an empty string', () =>
-     expect(loan.title).toEqual(''))
-
-  it('has an amount owed of 0', () =>
-     expect(loan.amountOwed).toEqual(0))
-
-  it('has 0 months to pay off the loan', () =>
-     expect(loan.monthsToPayOffLoan).toEqual(0))
-
-  it('has a monthly payment of 0', () =>
-     expect(loan.monthlyPayment).toEqual(0))
+  it('has the default compounding frequency', () =>
+    expect(defaultPaymentPlan).toHaveBeenCalled())
 
   describe('when an id is provided', () => {
     const id = 0
