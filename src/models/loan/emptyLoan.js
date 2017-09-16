@@ -1,5 +1,5 @@
 const emptyLoan = id => ({
-  id: id,
+  id: typeof id === 'undefined' ? null : id,
   title: '',
   amountOwed: 0,
   interestRate: 0,
