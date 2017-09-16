@@ -1,18 +1,16 @@
 import React from 'react'
+import autobind from 'autobind-decorator'
 import LoanEntryField from './LoanEntryField'
 import RemoveLoan from '../buttons/RemoveLoanButton'
 
 export default class LoanEntry extends React.Component {
   constructor (props) {
     super(props)
-    this.state = this.props
-    this.handleChange = this.handleChange.bind(this)
   }
 
-  handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    })
+  @autobind
+  handleChange({ target: { id, name, value } }) {
+    this.props.onFieldChange(id, name, value)
   }
 
   render() {
@@ -50,7 +48,7 @@ export default class LoanEntry extends React.Component {
           field_id={interestRateFieldId}
           name={interestRateFieldName}
           value={interestRateFieldValue}
-          label={'Interest Rate:'}
+          label={'Yearly Interest Rate (Decimal):'}
           on_change={this.handleChange} />
         <LoanEntryField
           field_id={monthlyPaymentFieldId}

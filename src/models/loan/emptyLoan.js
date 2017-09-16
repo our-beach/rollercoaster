@@ -4,6 +4,7 @@ const emptyLoan = id => ({
   amountOwed: 0,
   interestRate: 0,
   monthlyPayment: 0,
+  monthsToPayOffLoan: 0
 })
 
 export default emptyLoan
