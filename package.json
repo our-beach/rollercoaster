@@ -28,5 +28,16 @@
     "react-test-renderer": "^15.6.1",
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1"
+  },
+  "jest": {
+    "automock": true,
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json"
+    ],
+    "modulePaths": [
+      "src"
+    ]
   }
 }

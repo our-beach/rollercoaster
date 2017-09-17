@@ -1,12 +1,12 @@
 import defaultInterestRate from '../interest_rate/defaultInterestRate'
-import defaultFrequency from '../frequency/defaultFrequency'
+import defaultCompoundingFrequency from '../frequency/defaultCompoundingFrequency'
 
 const emptyLoan = id => ({
   id: typeof id === 'undefined' ? null : id,
   title: '',
   amountOwed: 0,
   interestRate: defaultInterestRate(),
-  frequency: defaultFrequency()
+  frequency: defaultCompoundingFrequency()
 })
 
 export default emptyLoan
