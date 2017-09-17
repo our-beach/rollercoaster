@@ -31,6 +31,15 @@
     "webpack-dev-server": "^2.7.1"
   },
   "jest": {
+    "automock": true,
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json"
+    ],
+    "modulePaths": [
+      "src"
+    ],
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "collectCoverageFrom": ["src/**/*.{js,jsx}"]
