@@ -14,16 +14,16 @@ export default class LoanEntry extends React.Component {
   }
 
   render() {
-    const {id, title, amountOwed, interestRate, monthlyPayment} = this.props
+    const {id, debt: {title, amountOwed, interestRate: {rate}}, paymentPlan: {monthlyPayment}} = this.props
     const titleFieldName = 'title'
     const titleFieldId = `${id}-${titleFieldName}`
     const titleFieldValue = title
     const amountOwedFieldName = 'amount-owed'
     const amountOwedFieldId = `${id}-${amountOwedFieldName}`
     const amountOwedFieldValue = amountOwed
-    const interestRateFieldName = 'interest-rate'
-    const interestRateFieldId = `${id}-${interestRateFieldName}`
-    const interestRateFieldValue = interestRate
+    const rateFieldName = 'rate'
+    const rateFieldId = `${id}-${rateFieldName}`
+    const rateFieldValue = rate
     const monthlyPaymentFieldName = 'monthly-payment'
     const monthlyPaymentFieldId = `${id}-${monthlyPaymentFieldName}`
     const monthlyPaymentFieldValue = monthlyPayment
@@ -45,9 +45,9 @@ export default class LoanEntry extends React.Component {
           label={'Amount Owed:'}
           on_change={this.handleChange} />
         <LoanEntryField
-          field_id={interestRateFieldId}
-          name={interestRateFieldName}
-          value={interestRateFieldValue}
+          field_id={rateFieldId}
+          name={rateFieldName}
+          value={rateFieldValue}
           label={'Yearly Interest Rate (Decimal):'}
           on_change={this.handleChange} />
         <LoanEntryField

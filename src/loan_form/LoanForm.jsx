@@ -4,6 +4,7 @@ import LoanEntries from './LoanEntries'
 import AddLoan from './buttons/AddLoanButton'
 import Calculate from './buttons/CalculateButton'
 import emptyLoan from '../models/loan/emptyLoan'
+import FREQUENCY from '../models/frequency/frequencyEnum'
 import Calculation from './loan_calculate/Calculation'
 import camelCase from 'lodash.camelcase'
 
@@ -13,7 +14,7 @@ export default class LoanForm extends React.Component {
     super(props)
     this.state = {
       loans: [emptyLoan(0)],
-      maxMonthsToPayOffLoan: 0
+      maximumRepaymentTerm: 0
     }
   }
 
@@ -35,8 +36,21 @@ export default class LoanForm extends React.Component {
 
     for (var i = 0; i < this.state.loans.length; i++) {
       if (this.state.loans[i]['id'] == parseInt(id)) {
-        newLoans[i][camelCase(name)] = value
-        newLoans[i].monthsToPayOffLoan = this.findLoanLength(newLoans[i])
+        switch(name) {
+          case 'title':
+            newLoans[i]['debt'][camelCase(name)] = value
+            break
+          case 'amount-owed':
+            newLoans[i]['debt'][camelCase(name)] = value
+            break
+          case 'rate':
+            newLoans[i]['debt']['interestRate'][camelCase(name)] = value
+            break
+          case 'monthly-payment':
+            newLoans[i]['paymentPlan'][camelCase(name)] = value
+            break
+        }
+        newLoans[i].paymentPlan.repaymentTerm = this.calculateRepaymentTerm(newLoans[i])
       }
     }
 
@@ -55,32 +69,32 @@ export default class LoanForm extends React.Component {
     return amountOwed * (((1 + yearlyInterestRate / this.daysInYear(year)) ** this.daysInMonth(month)) - 1)
   }
 
-  findLoanLength({amountOwed, interestRate, monthlyPayment}) {
+  calculateRepaymentTerm({debt:{amountOwed, interestRate: {rate}}, paymentPlan: {monthlyPayment}}) {
     
     let tempAmountOwed = parseFloat(amountOwed)
-    let interest = this.effectiveMonthlyInterest(tempAmountOwed, interestRate)
-    let monthsToPayOffLoan = 0
+    let interest = this.effectiveMonthlyInterest(tempAmountOwed, rate)
+    let repaymentTerm = 0
 
     if (monthlyPayment <= interest && amountOwed > 0) {
-      monthsToPayOffLoan = Infinity
+      repaymentTerm = Infinity
     } else {
       while (tempAmountOwed > 0) {
-        monthsToPayOffLoan += 1
-        interest = this.effectiveMonthlyInterest(tempAmountOwed, interestRate)
+        repaymentTerm += 1
+        interest = this.effectiveMonthlyInterest(tempAmountOwed, rate)
         tempAmountOwed += interest - monthlyPayment
       }
     }
 
-    return monthsToPayOffLoan
+    return repaymentTerm
   }
 
   calculate() {
     const max = (x, y) => (x > y ? x : y)
-    const maxMonthsToPayOffLoan = this.state.loans
-      .map(loan => loan.monthsToPayOffLoan)
+    const maximumRepaymentTerm = this.state.loans
+      .map(loan => loan.paymentPlan.repaymentTerm)
       .reduce(max)
 
-    this.setState({ maxMonthsToPayOffLoan: maxMonthsToPayOffLoan })
+    this.setState({ maximumRepaymentTerm: maximumRepaymentTerm })
   }
   
   render() {
@@ -91,7 +105,7 @@ export default class LoanForm extends React.Component {
           <AddLoan onClick={this.handleAddLoan} />
           <Calculate onClick={this.calculate}/>
         </div>
-        <Calculation total_months={this.state.maxMonthsToPayOffLoan} />
+        <Calculation total_months={this.state.maximumRepaymentTerm} />
       </div>
     )
   }
