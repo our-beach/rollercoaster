@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "webpack-dev-server --config ./config/dev",
     "build": "webpack --config ./config/prod",
-    "test": "jest"
+    "test": "jest",
+    "test-coverage": "jest --coverage"
   },
   "dependencies": {},
   "devDependencies": {
@@ -32,7 +33,6 @@
   },
   "jest": {
     "coverageDirectory": "./coverage/",
-    "collectCoverage": true,
     "collectCoverageFrom": ["src/**/*.{js,jsx}"],
     "automock": true,
     "moduleFileExtensions": [
