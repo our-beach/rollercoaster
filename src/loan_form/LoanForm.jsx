@@ -5,7 +5,7 @@ import AddLoan from './buttons/AddLoanButton'
 import Calculate from './buttons/CalculateButton'
 import emptyLoan from '../models/loan/emptyLoan'
 import FREQUENCY from '../models/frequency/frequencyEnum'
-import Calculation from './loan_calculate/Calculation'
+import MaximumRepaymentTerm from './loan_calculate/MaximumRepaymentTerm'
 import camelCase from 'lodash.camelcase'
 
 @autobind
@@ -88,13 +88,13 @@ export default class LoanForm extends React.Component {
     return repaymentTerm
   }
 
-  calculate() {
+  maximumRepaymentTerm(listOfLoans) {
     const max = (x, y) => (x > y ? x : y)
-    const maximumRepaymentTerm = this.state.loans
-      .map(loan => loan.paymentPlan.repaymentTerm)
-      .reduce(max)
+    return listOfLoans.map(loan => loan.paymentPlan.repaymentTerm).reduce(max)
+  }
 
-    this.setState({ maximumRepaymentTerm: maximumRepaymentTerm })
+  updateMaximumRepaymentTerm() {
+    this.setState({ maximumRepaymentTerm: this.maximumRepaymentTerm(this.state.loans) })
   }
   
   render() {
@@ -103,9 +103,9 @@ export default class LoanForm extends React.Component {
         <LoanEntries loans={this.state.loans} onFieldChange={this.handleChange}/>
         <div>
           <AddLoan onClick={this.handleAddLoan} />
-          <Calculate onClick={this.calculate}/>
+          <Calculate onClick={this.updateMaximumRepaymentTerm}/>
         </div>
-        <Calculation total_months={this.state.maximumRepaymentTerm} />
+        <MaximumRepaymentTerm total_months={this.state.maximumRepaymentTerm} />
       </div>
     )
   }
