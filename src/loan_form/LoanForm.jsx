@@ -19,10 +19,14 @@ export default class LoanForm extends React.Component {
   }
 
   createLoan() {
-    const lastId = this.state.loans[this.state.loans.length - 1].id
-    return emptyLoan(lastId + 1)
+    if (this.state.loans.length > 0) {
+      const lastId = this.state.loans[this.state.loans.length - 1].id
+      return emptyLoan(lastId + 1)
+    } else {
+      return emptyLoan(0)
+    }
   }
-  
+
   handleAddLoan() {
     const newLoans = this.state.loans.concat(
       this.createLoan()
@@ -30,7 +34,12 @@ export default class LoanForm extends React.Component {
 
     this.setState({ loans: newLoans })
   }
-  
+
+  handleRemove(id) {
+    const newLoans = this.state.loans.filter(l => l.id !== id)
+    this.setState({ loans: newLoans })
+  }
+
   handleChange(id, name, value) {
     const newLoans = this.state.loans
 
@@ -70,7 +79,7 @@ export default class LoanForm extends React.Component {
   }
 
   calculateRepaymentTerm({debt:{amountOwed, interestRate: {rate}}, paymentPlan: {monthlyPayment}}) {
-    
+
     let tempAmountOwed = parseFloat(amountOwed)
     let interest = this.effectiveMonthlyInterest(tempAmountOwed, rate)
     let repaymentTerm = 0
@@ -96,11 +105,14 @@ export default class LoanForm extends React.Component {
 
     this.setState({ maximumRepaymentTerm: maximumRepaymentTerm })
   }
-  
+
   render() {
     return (
       <div>
-        <LoanEntries loans={this.state.loans} onFieldChange={this.handleChange}/>
+        <LoanEntries
+          loans={this.state.loans}
+          onFieldChange={this.handleChange}
+          onRemove={this.handleRemove} />
         <div>
           <AddLoan onClick={this.handleAddLoan} />
           <Calculate onClick={this.calculate}/>
