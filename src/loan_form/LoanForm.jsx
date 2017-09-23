@@ -41,13 +41,13 @@ export default class LoanForm extends React.Component {
             newLoans[i]['debt'][camelCase(name)] = value
             break
           case 'amount-owed':
-            newLoans[i]['debt'][camelCase(name)] = value
+            newLoans[i]['debt'][camelCase(name)] = value ? parseFloat(value) : 0
             break
           case 'rate':
-            newLoans[i]['debt']['interestRate'][camelCase(name)] = value
+            newLoans[i]['debt']['interestRate'][camelCase(name)] = value ? parseFloat(value) : 0
             break
           case 'monthly-payment':
-            newLoans[i]['paymentPlan'][camelCase(name)] = value
+            newLoans[i]['paymentPlan'][camelCase(name)] = value ? parseFloat(value) : 0
             break
         }
         newLoans[i].paymentPlan.repaymentTerm = this.calculateRepaymentTerm(newLoans[i])
@@ -65,27 +65,28 @@ export default class LoanForm extends React.Component {
     return 30.417
   }
 
-  effectiveMonthlyInterest(amountOwed, yearlyInterestRate, month, year) {
-    return amountOwed * (((1 + yearlyInterestRate / this.daysInYear(year)) ** this.daysInMonth(month)) - 1)
+  effectiveMonthlyInterestRate(yearlyInterestRate, month, year) {
+    return ((1 + yearlyInterestRate / this.daysInYear(year)) ** this.daysInMonth(month)) - 1
   }
 
   calculateRepaymentTerm({debt:{amountOwed, interestRate: {rate}}, paymentPlan: {monthlyPayment}}) {
+    const a = Math.log(monthlyPayment),
+          b = Math.log(monthlyPayment - amountOwed * this.effectiveMonthlyInterestRate(rate)),
+          c = Math.log(1 + this.effectiveMonthlyInterestRate(rate))
     
-    let tempAmountOwed = parseFloat(amountOwed)
-    let interest = this.effectiveMonthlyInterest(tempAmountOwed, rate)
-    let repaymentTerm = 0
+    const repaymentTerm = rate ? (a - b) / c : amountOwed / monthlyPayment
 
-    if (monthlyPayment <= interest && amountOwed > 0) {
-      repaymentTerm = Infinity
+    return Math.ceil(repaymentTerm)
+  }
+
+  calculateMonthlyPayment({debt:{amountOwed, interestRate: {rate}}, paymentPlan: {repaymentTerm}}) {
+    const interestRate = this.effectiveMonthlyInterestRate(rate)
+    if (rate) {
+      const monthlyPayment = amountOwed * (interestRate / (1 - (1 + interestRate) ** -repaymentTerm))
     } else {
-      while (tempAmountOwed > 0) {
-        repaymentTerm += 1
-        interest = this.effectiveMonthlyInterest(tempAmountOwed, rate)
-        tempAmountOwed += interest - monthlyPayment
-      }
+      const monthlyPayment = amountOwed / repaymentTerm
     }
-
-    return repaymentTerm
+    return monthlyPayment
   }
 
   calculate() {
