@@ -7,7 +7,8 @@ export default function LoanEntries({ loans, onFieldChange, onRemove }) {
         { loans.map((loan, idx) =>
                     <LoanEntry
                         key={idx}
-                        onFieldChange={onFieldChange} {...loan}
+                        onFieldChange={onFieldChange}
+                        {...loan}
                         onRemove={onRemove} />
                    ) }
       </div>

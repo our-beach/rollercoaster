@@ -8,6 +8,7 @@ export default function InterestRate({ amount, onChange }) {
   return (
     <LoanEntryField
       fieldClass='interest-rate'
+      name='interest-rate'
       label={label}
       value={amount}
       initial={placeholder}

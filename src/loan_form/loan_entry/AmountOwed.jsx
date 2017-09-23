@@ -8,6 +8,7 @@ export default function AmountOwed({ amount, onChange }) {
   return (
     <LoanEntryField
       fieldClass='amount-owed'
+      name='amount-owed'
       label={label}
       value={amount}
       initial={placeholder}
