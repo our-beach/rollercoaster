@@ -1,15 +1,16 @@
 import React from 'react'
 
-export default function LoanEntryField({ field_id, name, value, label, on_change }) {
+export default function LoanEntryField({ fieldClass, name, value, label, initial, onChange }) {
   return (
     <div>
       <label>{label}</label>
       <input
         type="text"
-        id={field_id}
+        className={`loan-entry-${fieldClass}`}
         name={name}
-        placeholder={value}
-        onChange={on_change} />
+        placeholder={initial}
+        value={value}
+        onChange={({ target: { value } }) => onChange(value)} />
     </div>
   )
 }

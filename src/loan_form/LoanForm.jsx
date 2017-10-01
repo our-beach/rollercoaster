@@ -1,37 +1,45 @@
 import React from 'react'
 import autobind from 'autobind-decorator'
+import camelCase from 'lodash.camelcase'
+import R from 'ramda'
+
 import LoanEntries from './LoanEntries'
 import AddLoan from './buttons/AddLoanButton'
 import Calculate from './buttons/CalculateButton'
+import Calculation from './loan_calculate/Calculation'
+
+import Ledger, {
+  addLoan,
+  removeLoanAt,
+  repaymentTerm,
+  loansIn,
+} from '../models/ledger'
+import { loanAt } from '../models/ledger/lenses'
+import { loanProp, repaymentTerm as loanRepaymentTerm } from '../models/loan/lenses'
 import emptyLoan from '../models/loan/emptyLoan'
 import FREQUENCY from '../models/frequency/frequencyEnum'
-import Calculation from './loan_calculate/Calculation'
-import camelCase from 'lodash.camelcase'
+
 
 @autobind
 export default class LoanForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      loans: [emptyLoan(0)],
+      ledger: Ledger.withLoans([emptyLoan()]),
       maximumRepaymentTerm: 0
     }
   }
 
-  createLoan() {
-    const lastId = this.state.loans[this.state.loans.length - 1].id
-    return emptyLoan(lastId + 1)
-  }
-  
   handleAddLoan() {
-    const newLoans = this.state.loans.concat(
-      this.createLoan()
-    )
-
-    this.setState({ loans: newLoans })
+    this.setState({ ledger: addLoan(this.state.ledger, emptyLoan()) })
   }
-  
+
+  handleRemove(id) {
+    this.setState({ ledger: removeLoanAt(id, this.state.ledger) })
+  }
+
   handleChange(id, name, value) {
+<<<<<<< HEAD
     const newLoans = this.state.loans
 
     for (var i = 0; i < this.state.loans.length; i++) {
@@ -53,8 +61,17 @@ export default class LoanForm extends React.Component {
         newLoans[i].paymentPlan.repaymentTerm = this.calculateRepaymentTerm(newLoans[i])
       }
     }
+=======
+    const changedLoanProperty = R.compose(loanAt(id), loanProp(camelCase(name)))
+    const steps = [
+      R.set(changedLoanProperty, value),
+      R.over(loanAt(parseInt(id)),
+             loan => R.set(loanRepaymentTerm, this.calculateRepaymentTerm(loan), loan))
+    ]
+>>>>>>> develop
 
-    this.setState({ loans: newLoans })
+    const newLedger = R.reduce(R.flip(R.call), this.state.ledger, steps)
+    this.setState({ ledger: newLedger })
   }
 
   daysInYear(year) {
@@ -70,6 +87,7 @@ export default class LoanForm extends React.Component {
   }
 
   calculateRepaymentTerm({debt:{amountOwed, interestRate: {rate}}, paymentPlan: {monthlyPayment}}) {
+<<<<<<< HEAD
     const a = Math.log(monthlyPayment),
           b = Math.log(monthlyPayment - amountOwed * this.effectiveMonthlyInterestRate(rate)),
           c = Math.log(1 + this.effectiveMonthlyInterestRate(rate))
@@ -78,6 +96,11 @@ export default class LoanForm extends React.Component {
 
     return Math.ceil(repaymentTerm)
   }
+=======
+    let tempAmountOwed = parseFloat(amountOwed)
+    let interest = this.effectiveMonthlyInterest(tempAmountOwed, rate)
+    let repaymentTerm = 0
+>>>>>>> develop
 
   calculateMonthlyPayment({debt:{amountOwed, interestRate: {rate}}, paymentPlan: {repaymentTerm}}) {
     const interestRate = this.effectiveMonthlyInterestRate(rate)
@@ -90,18 +113,18 @@ export default class LoanForm extends React.Component {
   }
 
   calculate() {
-    const max = (x, y) => (x > y ? x : y)
-    const maximumRepaymentTerm = this.state.loans
-      .map(loan => loan.paymentPlan.repaymentTerm)
-      .reduce(max)
-
-    this.setState({ maximumRepaymentTerm: maximumRepaymentTerm })
+    this.setState({
+      maximumRepaymentTerm: repaymentTerm(this.state.ledger)
+    })
   }
-  
+
   render() {
     return (
       <div>
-        <LoanEntries loans={this.state.loans} onFieldChange={this.handleChange}/>
+        <LoanEntries
+          loans={loansIn(this.state.ledger)}
+          onFieldChange={this.handleChange}
+          onRemove={this.handleRemove} />
         <div>
           <AddLoan onClick={this.handleAddLoan} />
           <Calculate onClick={this.calculate}/>
