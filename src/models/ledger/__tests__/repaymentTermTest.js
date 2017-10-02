@@ -13,4 +13,13 @@ describe('#repaymentTerm', () => {
   it('should calculate the repayment term for the entire ledger', () => {
     expect(repaymentTerm(ledger)).toEqual(expectedRepaymentTerm)
   })
+
+  const loan4 = { paymentPlan: { repaymentTerm: 100 } }
+  const loan5 = { paymentPlan: { repaymentTerm: Infinity } }
+  const ledger2 = Ledger.withLoans([loan4, loan5])
+  const expectedRepaymentTerm2 = Infinity
+
+  it('should calculate a repayment term of Infinity when one loan is unpayable', () => {
+    expect(repaymentTerm(ledger2)).toEqual(expectedRepaymentTerm2)
+  })
 })
