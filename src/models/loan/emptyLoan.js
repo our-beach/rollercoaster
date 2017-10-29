@@ -1,10 +1,9 @@
+import defaultDebt from '../debt/defaultDebt'
+import defaultPaymentPlan from '../payment_plan/defaultPaymentPlan'
+
 const emptyLoan = id => ({
-  id: id,
-  title: '',
-  amountOwed: 0,
-  interestRate: 0,
-  monthlyPayment: 0,
-  monthsToPayOffLoan: 0
+  debt: defaultDebt(),
+  paymentPlan: defaultPaymentPlan()
 })
 
 export default emptyLoan
