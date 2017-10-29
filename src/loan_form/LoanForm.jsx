@@ -16,9 +16,8 @@ import Ledger, {
 } from '../models/ledger'
 import { loanAt } from '../models/ledger/lenses'
 import { loanProp, repaymentTerm as loanRepaymentTerm } from '../models/loan/lenses'
-import emptyLoan from '../models/loan/emptyLoan'
+import { emptyLoan, calculateRepaymentTerm } from '../models/loan'
 import FREQUENCY from '../models/frequency/frequencyEnum'
-
 
 @autobind
 export default class LoanForm extends React.Component {
@@ -43,41 +42,11 @@ export default class LoanForm extends React.Component {
     const steps = [
       R.set(changedLoanProperty, value),
       R.over(loanAt(parseInt(id)),
-             loan => R.set(loanRepaymentTerm, this.calculateRepaymentTerm(loan), loan))
+             loan => R.set(loanRepaymentTerm, calculateRepaymentTerm(loan), loan))
     ]
 
     const newLedger = R.reduce(R.flip(R.call), this.state.ledger, steps)
     this.setState({ ledger: newLedger })
-  }
-
-  daysInYear(year) {
-    return 365
-  }
-
-  daysInMonth(month) {
-    return 30.417
-  }
-
-  effectiveMonthlyInterest(amountOwed, yearlyInterestRate, month, year) {
-    return amountOwed * (((1 + yearlyInterestRate / this.daysInYear(year)) ** this.daysInMonth(month)) - 1)
-  }
-
-  calculateRepaymentTerm({debt:{amountOwed, interestRate: {rate}}, paymentPlan: {monthlyPayment}}) {
-    let tempAmountOwed = parseFloat(amountOwed)
-    let interest = this.effectiveMonthlyInterest(tempAmountOwed, rate)
-    let repaymentTerm = 0
-
-    if (monthlyPayment <= interest && amountOwed > 0) {
-      repaymentTerm = Infinity
-    } else {
-      while (tempAmountOwed > 0) {
-        repaymentTerm += 1
-        interest = this.effectiveMonthlyInterest(tempAmountOwed, rate)
-        tempAmountOwed += interest - monthlyPayment
-      }
-    }
-
-    return repaymentTerm
   }
 
   calculate() {
